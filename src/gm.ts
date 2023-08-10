@@ -1,6 +1,5 @@
 import web3 = require("@solana/web3.js")
 import Dotenv from "dotenv"
-import { connect } from "http2"
 Dotenv.config()
 
 const programId = new web3.PublicKey("MQ84D7RkiiBL6HD7TX4tSVbupYQYpwkXAzhEVhdMHEU")
