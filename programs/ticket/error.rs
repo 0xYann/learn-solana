@@ -6,6 +6,9 @@ pub enum TicketError{
     // Error 0
     #[error("PDA derived not equal to PDA passed in")]
     InvalidPDA
+    // Error 1
+    #[error("Invalid data")]
+    InvalidData
 }
 
 impl From<TicketError> for ProgramError {
