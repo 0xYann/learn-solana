@@ -25,7 +25,7 @@ pub fn process_instruction(
 ) -> ProgramResult {
     let instruction = TicketInstruction::unpack(instruction_data)?;
     match instruction {
-        TicketInstruction::ShowTicket { id, event } => show_ticket(id, event),
+        TicketInstruction::ShowTicket {} => show_ticket(accounts),
         TicketInstruction::CreateTicket {
             id,
             owner,
@@ -35,12 +35,16 @@ pub fn process_instruction(
     }
 }
 
-pub fn show_ticket(id: u8, event: String) -> ProgramResult {
+pub fn show_ticket(accounts: &[AccountInfo]) -> ProgramResult {
+    let account_info_iter = &mut accounts.iter();
+    let pda_account = next_account_info(account_info_iter)?;
+    let account_data = try_from_slice_unchecked::<Ticket>(&pda_account.data.borrow()).unwrap();
+
     msg!("Showing ticket details...");
-    msg!("Id: {}", id);
-    // msg!("Owner: {}", owner);
-    msg!("Event: {}", event);
-    // msg!("Place: {}", place);
+    msg!("Id: {}", account_data.id);
+    msg!("Owner: {}", account_data.owner);
+    msg!("Event: {}", account_data.event);
+    msg!("Place: {}", account_data.place);
 
     Ok(())
 }
