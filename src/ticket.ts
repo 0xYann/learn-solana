@@ -17,7 +17,7 @@ async function main() {
     const connection = new web3.Connection(web3.clusterApiUrl('devnet'))
     const payer = initializeKeypair()
 
-    await showTicket(connection, payer)
+    await createTicket(connection, payer)
 }
 
 function initializeKeypair(): web3.Keypair {
@@ -79,7 +79,7 @@ async function createTicket(
     ticketInstructionLayout.encode(
         {
             selector: 1,
-            id: 0,
+            id: 1,
             owner: payer.publicKey,
             event: "Muse openair",
             place: "Sion"
@@ -89,7 +89,7 @@ async function createTicket(
     buffer = buffer.subarray(0, ticketInstructionLayout.getSpan(buffer))
 
     const [pda] = await web3.PublicKey.findProgramAddressSync(
-        [payer.publicKey.toBuffer(), Uint8Array.of(0), Buffer.from("Muse openair")],
+        [payer.publicKey.toBuffer(), Uint8Array.of(1), Buffer.from("Muse openair")],
         programId
     )
 

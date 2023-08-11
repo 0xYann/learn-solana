@@ -6,13 +6,16 @@ use solana_program::{
     entrypoint::ProgramResult,
     msg,
     program::invoke_signed,
+    program_error::ProgramError,
     pubkey::Pubkey,
     system_instruction,
     sysvar::{rent::Rent, Sysvar},
 };
 use std::convert::TryInto;
+pub mod error;
 pub mod instruction;
 pub mod ticket;
+use error::TicketError;
 use instruction::TicketInstruction;
 use ticket::Ticket;
 
@@ -63,10 +66,20 @@ pub fn create_ticket(
     let pda_account = next_account_info(account_info_iter)?;
     let system_program = next_account_info(account_info_iter)?;
 
+    if !creator.is_signer {
+        msg!("Missing required signature");
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
     let (pda, bump_seed) = Pubkey::find_program_address(
         &[creator.key.as_ref(), &[id], event.as_bytes().as_ref()],
         program_id,
     );
+
+    if pda != *pda_account.key {
+        msg!("Invalid seeds for PDA");
+        return Err(TicketError::InvalidPDA.into());
+    }
 
     let account_len: usize = 1 + 32 + (4 + event.len()) + (4 + place.len());
     let rent = Rent::get()?;
